@@ -10,12 +10,12 @@ ORMs and sql-rendering tools allow us to step around a lot of these problems. SQ
 
 Created in 2006, SQLAlchemy has been around the block and supports a multitude of databases. It's *extensively* documented. Its name is completely apt. Database spelunkers know, the complexity of some SQL queries borders on arcane. SQLAlchemy does not shy from this.
 
-![giphy](/Users/ainsleymcgrath/Documents/dev/chipy_08_08_2018/README.assets/giphy.gif)
+![giphy](./README.assets/giphy.gif)
 
 Much like transmuting the elements, transmuting data expertly with SQLAlchemy takes practice and a good bit of study. In my time learning it at least, I found myself battered from the journey at times.
 
-![giphy-2](/Users/ainsleymcgrath/Documents/dev/chipy_08_08_2018/README.assets/giphy-2.gif)
+![giphy-2](./README.assets/giphy-2.gif)
 
 Today I'll be going over what I've come to understand about the nature SQLAlchemy since picking it up in earnest. We'll pay particular attention to the things that I had trouble wrapping my had around on my journey. I'll also share some of the cool transmutation techniques I've learned along the way.
 
-![giphy-1](/Users/ainsleymcgrath/Documents/dev/chipy_08_08_2018/README.assets/giphy-1.gif)
+![giphy-1](./README.assets/giphy-1.gif)
