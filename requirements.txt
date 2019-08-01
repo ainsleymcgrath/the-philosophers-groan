@@ -1,2 +1,4 @@
 ipdb
 sqlalchemy
+black
+pylint
