@@ -10,13 +10,14 @@ from examples.schemas_and_ddl.core_style import (
 
 def insert_update_delete():
     """The idea is to debug through this and observe stuff happening to the data"""
-    foo = "nice"
+    print("insert update delete!!")
     breakpoint()
-    pass
 
 
 def selecting_and_joining():
-    pass
+    print("select join!!")
 
 
-insert_update_delete()
+def walkthrough():
+    insert_update_delete()
+    selecting_and_joining()

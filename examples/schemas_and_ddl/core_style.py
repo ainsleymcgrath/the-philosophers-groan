@@ -8,6 +8,7 @@ from sqlalchemy import (
     Numeric,
     Boolean,
     MetaData,
+    create_engine,
 )
 
 metadata = MetaData()
@@ -63,3 +64,9 @@ contact_info = Table(
     Column("email", String, nullable=False),
     Column("insta_handle", String),
 )
+
+
+def walkthrough():
+    breakpoint()
+    engine = create_engine("sqlite://")
+    metadata.create_all(engine)

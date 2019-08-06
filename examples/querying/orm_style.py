@@ -14,3 +14,7 @@ def insert_update_delete():
 
 def selecting_and_joining():
     pass
+
+
+def walkthrough():
+    pass

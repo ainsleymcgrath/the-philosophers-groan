@@ -8,6 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     Numeric,
     Boolean,
+    create_engine,
 )
 
 
@@ -64,3 +65,9 @@ class ContactInfo(Base):
     phone = Column(Integer)
     email = Column(String, nullable=False)
     insta_handle = Column(String)
+
+
+def walkthrough():
+    breakpoint()
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
