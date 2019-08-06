@@ -2,3 +2,5 @@ ipdb
 sqlalchemy
 black
 pylint
+__pycache__/
+*.py[cod]
