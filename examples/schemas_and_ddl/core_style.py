@@ -15,19 +15,19 @@ metadata = MetaData()
 bakery = Table(
     "bakery",
     metadata,
-    Column(Integer, primary_key=True),
-    Column(String, nullable=False),
-    Column(String, nullable=False),
-    Column(Date),
+    Column("id", Integer, primary_key=True),
+    Column("name", String, nullable=False),
+    Column("location", String, nullable=False),
+    Column("founded_date", Date),
 )
 
 baker = Table(
     "baker",
     metadata,
-    Column(Integer, primary_key=True),
-    Column(String, nullable=False),
-    Column(String),
-    Column(Integer, ForeignKey("contact_info.id")),
+    Column("id", Integer, primary_key=True),
+    Column("name", String, nullable=False),
+    Column("pronouns", String),
+    Column("contact_id", Integer, ForeignKey("contact_info.id")),
 )
 
 bakery_employees = Table(
@@ -41,10 +41,10 @@ bakery_employees = Table(
 bread = Table(
     "bread",
     metadata,
-    Column(Integer, primary_key=True),
-    Column(String, nullable=False),
-    Column(Boolean),
-    Column(Numeric),
+    Column("id", Integer, primary_key=True),
+    Column("name", String, nullable=False),
+    Column("is_delicious", Boolean),
+    Column("ingredient_cost", Numeric),
 )
 
 baker_specialty = Table(
@@ -58,8 +58,8 @@ baker_specialty = Table(
 contact_info = Table(
     "contact_info",
     metadata,
-    Column(Integer, primary_key=True),
-    Column(Integer),
-    Column(String, nullable=False),
-    insta_handle=Column(String),
+    Column("id", Integer, primary_key=True),
+    Column("phone", Integer),
+    Column("email", String, nullable=False),
+    Column("insta_handle", String),
 )
