@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column,
     Integer,
@@ -15,22 +16,15 @@ from sqlalchemy import (
 Base = declarative_base()
 
 
-class Baker(Base):
-    __tablename__ = "baker"
+class ContactInfo(Base):
+    __tablename__ = "contact_info"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    pronouns = Column(String)
-    contact_id = Column(Integer, ForeignKey("contact_info.id"))
-
-
-class Bread(Base):
-    __tablename__ = "bread"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    is_delicious = Column(Boolean)
-    ingredient_cost = Column(Numeric)
+    phone = Column(Integer)
+    email = Column(String, nullable=False)
+    insta_handle = Column(String)
+    birthday = Column(Date)
+    baker = relationship("Baker", back_populates="contact")
 
 
 baker_specialty = Table(
@@ -41,14 +35,29 @@ baker_specialty = Table(
 )
 
 
-class ContactInfo(Base):
-    __tablename__ = "contact_info"
+class Baker(Base):
+    __tablename__ = "baker"
 
     id = Column(Integer, primary_key=True)
-    phone = Column(Integer)
-    email = Column(String, nullable=False)
-    insta_handle = Column(String)
-    birthday = Column(Date)
+    name = Column(String, nullable=False)
+    pronouns = Column(String)
+    contact_id = Column(Integer, ForeignKey("contact_info.id"))
+    contact = relationship("ContactInfo", uselist=False, back_populates="baker")
+    specialties = relationship(
+        "Bread", secondary=baker_specialty, back_populates="specializing_bakers"
+    )
+
+
+class Bread(Base):
+    __tablename__ = "bread"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    is_delicious = Column(Boolean)
+    ingredient_cost = Column(Numeric)
+    specializing_bakers = relationship(
+        "Baker", secondary=baker_specialty, back_populates="specialties"
+    )
 
 
 def walkthrough():
