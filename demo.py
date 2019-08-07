@@ -1,10 +1,15 @@
-from examples import schemas_and_ddl, querying, tricks
+from sqlalchemy import create_engine, MetaData
+from examples import schemas_and_ddl, querying
 
-schemas_and_ddl.orm_style.walkthrough()
-schemas_and_ddl.core_style.walkthrough()
+engine = create_engine("sqlite://")
+metadata = MetaData(bind=engine)
 
-querying.core_style.walkthrough()
-querying.orm_style.walkthrough()
+schemas_and_ddl.orm_style.walkthrough(engine)
+querying.orm_style.walkthrough(engine)
 
+metadata.drop_all()
 
-tricks.walkthrough()
+schemas_and_ddl.core_style.walkthrough(engine)
+querying.core_style.walkthrough(engine)
+
+metadata.drop_all()
