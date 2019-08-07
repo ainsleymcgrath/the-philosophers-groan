@@ -8,7 +8,6 @@ from sqlalchemy import (
     Numeric,
     Boolean,
     MetaData,
-    create_engine,
 )
 
 metadata = MetaData()
@@ -20,7 +19,6 @@ baker = Table(
     Column("id", Integer, primary_key=True),
     Column("name", String, nullable=False),
     Column("pronouns", String),
-    Column("contact_id", Integer, ForeignKey("contact_info.id")),
 )
 
 
@@ -45,6 +43,7 @@ contact_info = Table(
     "contact_info",
     metadata,
     Column("id", Integer, primary_key=True),
+    Column("baker_id", Integer, ForeignKey("baker.id")),
     Column("phone", Integer),
     Column("email", String, nullable=False),
     Column("insta_handle", String),
@@ -52,7 +51,6 @@ contact_info = Table(
 )
 
 
-def walkthrough():
+def walkthrough(engine):
     breakpoint()
-    engine = create_engine("sqlite://")
     metadata.create_all(engine)
