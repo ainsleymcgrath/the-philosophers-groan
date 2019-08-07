@@ -9,7 +9,6 @@ from sqlalchemy import (
     ForeignKey,
     Numeric,
     Boolean,
-    create_engine,
 )
 
 
@@ -24,6 +23,7 @@ class ContactInfo(Base):
     email = Column(String, nullable=False)
     insta_handle = Column(String)
     birthday = Column(Date)
+    baker_id = Column(Integer, ForeignKey("baker.id"))
     baker = relationship("Baker", back_populates="contact")
 
 
@@ -41,7 +41,6 @@ class Baker(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     pronouns = Column(String)
-    contact_id = Column(Integer, ForeignKey("contact_info.id"))
     contact = relationship("ContactInfo", uselist=False, back_populates="baker")
     specialties = relationship(
         "Bread", secondary=baker_specialty, back_populates="specializing_bakers"
@@ -60,7 +59,6 @@ class Bread(Base):
     )
 
 
-def walkthrough():
+def walkthrough(engine):
     breakpoint()
-    engine = create_engine("sqlite://")
     Base.metadata.create_all(engine)
