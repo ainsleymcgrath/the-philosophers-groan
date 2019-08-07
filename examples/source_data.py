@@ -45,12 +45,12 @@ baker_form = {
 }
 
 all_existing_breads = [
-    ("miche", True, 2.22),
-    ("rye", True, 1.46),
-    ("wonder", False, 0.60),
-    ("challah", True, 1.99),
-    ("naan", True, 0.42),
-    ("brioche", True, 2.03),
+    {"name": "miche", "is_delicious": True, "ingredient_cost": 2.22},
+    {"name": "rye", "is_delicious": True, "ingredient_cost": 1.46},
+    {"name": "wonder", "is_delicious": False, "ingredient_cost": 0.60},
+    {"name": "challah", "is_delicious": True, "ingredient_cost": 1.99},
+    {"name": "naan", "is_delicious": True, "ingredient_cost": 0.42},
+    {"name": "brioche", "is_delicious": True, "ingredient_cost": 2.03},
 ]
 
 contact_info_dict = {
