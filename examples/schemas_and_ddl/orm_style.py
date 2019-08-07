@@ -15,15 +15,6 @@ from sqlalchemy import (
 Base = declarative_base()
 
 
-class Bakery(Base):
-    __tablename__ = "bakery"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    location = Column(String, nullable=False)
-    founded_date = Column(Date)
-
-
 class Baker(Base):
     __tablename__ = "baker"
 
@@ -31,14 +22,6 @@ class Baker(Base):
     name = Column(String, nullable=False)
     pronouns = Column(String)
     contact_id = Column(Integer, ForeignKey("contact_info.id"))
-
-
-bakery_employees = Table(
-    "bakery_employees",
-    Base.metadata,
-    Column("baker_id", ForeignKey("baker.id"), primary_key=True),
-    Column("bakery_id", ForeignKey("bakery.id"), primary_key=True),
-)
 
 
 class Bread(Base):
@@ -65,6 +48,7 @@ class ContactInfo(Base):
     phone = Column(Integer)
     email = Column(String, nullable=False)
     insta_handle = Column(String)
+    birthday = Column(Date)
 
 
 def walkthrough():
