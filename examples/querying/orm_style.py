@@ -1,4 +1,5 @@
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.dialects import sqlite
 
 from examples.source_data import baker_form, all_existing_breads
 from examples.schemas_and_ddl.orm_style import (
@@ -7,6 +8,16 @@ from examples.schemas_and_ddl.orm_style import (
     baker_specialty,
     ContactInfo,
 )
+
+
+def render(query):
+    print(
+        str(
+            query.statement.compile(
+                compile_kwargs={"literal_binds": True}, dialect=sqlite.dialect()
+            )
+        )
+    )
 
 
 def insert_and_update(session):
@@ -52,12 +63,11 @@ def select_join_delete(session):
         .join(baker_specialty)
         .join(Bread)
         .filter(Bread.is_delicious == False)
-        .all()
     )
 
     breakpoint()
 
-    for baker in mediocre_bakers:
+    for baker in mediocre_bakers.all():
         session.delete(baker)
 
     breakpoint()
