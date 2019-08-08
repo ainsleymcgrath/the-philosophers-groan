@@ -52,31 +52,3 @@ all_existing_breads = [
     {"name": "naan", "is_delicious": True, "ingredient_cost": 0.42},
     {"name": "brioche", "is_delicious": True, "ingredient_cost": 2.03},
 ]
-
-contact_info_dict = {
-    "Zeb": (6304206969, "zeb@zeb.bakes", "@zeb.bakes", date(1999, 12, 19)),
-    "Gary": (6304206969, "garyjones@gmail.com", "@gar-bear", date(1992, 4, 21)),
-    "Rosalia": (6304206969, "rosalia@bakezone.org", "@rosybread", date(2001, 1, 21)),
-    "Guido": (6304206969, "gvr@snakebread.io", "@snakebread", date(1995, 8, 23)),
-}
-
-baker_list = [
-    ("Zeb", "they/them", 1),
-    ("Gary", "he/him", 2),
-    ("Rosalia", "she/her", 3),
-    ("Guido", "he/him", 4),
-]
-
-
-# for core
-baker_specialty_list = [
-    (1, 1),
-    (1, 2),
-    (2, 3),
-    (3, 1),
-    (3, 2),
-    (3, 4),
-    (4, 2),
-    (4, 4),
-    (4, 5),
-]
