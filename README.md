@@ -42,38 +42,43 @@ Below are some truncated samples of what `core` and `orm` code looks like. Major
 
 ```python
 # ddl
-class Bakery(Base):
-    __tablename__ = "bakery"
+class Baker(Base):
+    __tablename__ = "baker"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    location = Column(String, nullable=False)
-    founded_date = Column(Date)
-    
+    pronouns = Column(String)
+    contact = relationship("ContactInfo", uselist=False, back_populates="baker")
+    specialties = relationship(
+        "Bread", secondary=baker_specialty, back_populates="specializing_bakers"
+    )
+
     def __repr__(self):
-          return f"<Baker {self.name}>"
+        return f"<Baker {self.name} ({self.pronouns})>"
+
 
 # insert, later on, elsewhere in the codebase...
 to_insert = [
-    ["Floriole", "Chicago", "01/01/1642"],
-    ["Naomi's Treats", "Nebraska", "05/26/2008"],
-    ["Taco Bell", "Valhalla", None],
+    ["Ed", "he/him"],
+    ["Zeb", "they/them"],
+    ["Rheta", "she/her"],
+    ["Brad", None"],
 ]
 
 session.add_all(
     [
-        Bakery(name=name, location=loc, founded_date=dt)
-        for name, loc, dt in to_insert
+        Baker(name=name, pronouns=pronouns)
+        for name, pronouns in to_insert
     ]
 )
 
 session.commit()
 
 # select and delete, later on, elsewhere in the codebase...
-missing_founded_date = session.query(Bakery).filter(
-    Bakery.founded_date is None
+no_pronouns = session.query(Baker).filter(
+    Baker.pronouns is None
 )
-might_not_be_bakery.delete()
+no_pronouns.delete()
 
 session.commit()
 ```
@@ -95,28 +100,29 @@ Authors use things like the `select()` function to create `SELECT` statements, p
 
 ```python
 # ddl
-bakery = Table(
-    "bakery",
+
+baker = Table(
+    "baker",
     metadata,
     Column("id", Integer, primary_key=True),
     Column("name", String, nullable=False),
-    Column("location", String, nullable=False),
-    Column("founded_date", Date),
+    Column("pronouns", String),
 )
 
 metadata.create_all()
 
 # insert, later on, elsewhere in the codebase...
 to_insert = [
-    ["Floriole", "Chicago", "01/01/1642"],
-    ["Naomi's Treats", "Nebraska", "05/26/2008"],
-    ["Taco Bell", "Valhalla", None],
+    ["Ed", "he/him"],
+    ["Zeb", "they/them"],
+    ["Rheta", "she/her"],
+    ["Brad", None"],
 ]
 
-insert_statement = bakery.insert().values(
+insert_statement = baker.insert().values(
     [
-        {"name": name, "location": loc, "founded_date": dt}
-        for name, loc, dt in to_insert
+        {"name": name, "pronouns": pronouns}
+        for name, pronouns, dt in to_insert
     ]
 )
 
@@ -124,8 +130,8 @@ conn.execute(insert_statement)
 
 # select and delete, later on, elsewhere in the codebase...
 delete_statement = (
-    select([bakery])
-      .where(bakery.c.founded_date is None)
+    select([baker])
+    .where(baker.c.pronouns is None)
     .delete()  
 )
 
@@ -265,49 +271,53 @@ Some less frequently used `Connection` tools:
 
 ```python
 transaction = conn.begin()  # a `Transaction` object offers some niceties of `Session`
-conn.execute(statemement)
+conn.execute(statement)
 transaction.commit()  # emits pending statements from conn.execute calls
 
 raw_conn = engine.raw_connection()  # for barbarians; .execute() takes plain SQL
 ```
 
-#### Queries and Queryish Constructs
+#### Queries & Queryish Constructs
 
 This is where my confusion became unbearable. The idioms from `core` and `orm` *can* be wrestled into working together, but that's either gonna be advanced or smelly. We've fully diverged at this point. 
 
 `orm` has the `Query` object. Not bad. It has methods like `cte`, `subquery`,  and `limit` to let us build out SQL constructs from the comfort of Python objects.
 
 ```python
-session.query(Bakery)  # produces a `Query`. 
-                                             # this one is equivalent to SELECT * FROM BAKERY
+session.query(Bread)  # produces a `Query`. 
+                      # this one is equivalent to SELECT * FROM bread
 
-bennisons = Bakery(name="bennisons", location="Evanston")
-session.add(bennisons)  # on commit(), an insert is emitted
-bennisons.name = "Bennison's"  # session will remember this mutation and commit accordingly
+miche = Bread(name="miche", is_delicious=True, ingredient_cost=2.22)
+wonderbread = Bread(name="wonder", is_delicious=False, ingredient_cost=0.60)
 
-session.query(Bakery.name, Baker.name)
-    .filter(Bakery.location == "Chicago")
-      .join(Baker)
-    .filter(Baker.pronouns == "she/her")
-    .order_by(Baker.age.desc())
-    .limit(10)
-    .cte(name="oldest_female_identifying_bakers")
+session.add_all(bennisons, wonderbread)  # on commit(), an insert is emitted
+
+wonderbread.name = "wonderbread"  # session remembers this mutation, will commit accordingly
+
+talented_lady_bakers = (
+    session.query(Baker.name, Bread.name)
+    .select_from(Baker)
+    .join(baker_specialty)
+    .join(Bread)
+    .filter(
+        Bread.is_delicious == True,
+        Baker.pronouns == "she/her",
+    )
+   .all()
+)
 ```
 
 The second `query` call above produces some SQL like this.
 
 ```sql
-WITH oldest_female_identifying_bakers AS (
-    SELECT bkry.name, bkr.name
-  FROM bakery bkry
-  JOIN bakery_employees be ON be.bakery_id = bkry.id
-  JOIN baker bkr ON bkr.id = be.baker_id
-  WHERE bkr.pronouns = "she/her"
-  ORDER BY bkr.age DESC
-  LIMIT 10
-)
-
-SELECT * FROM oldest_female_identifying_bakers;
+SELECT baker.name, bread.name 
+FROM baker 
+JOIN baker_specialty 
+ON baker.id = baker_specialty.baker_id 
+JOIN bread 
+ON bread.id = baker_specialty.bread_id 
+WHERE bread.is_delicious = true 
+AND baker.pronouns = 'she/her'
 ```
 
 Note how we use `.filter` rather than something like `.where`. That's what makes ORM ORM. We aren't dealing with tables, we are dealing with a set of Python objects *mapped* to tables. For our comfort, this is abstracted away and hidden inside the mechanics of `session.commit()`. We `session.add` objects rather than talking about database inserts, etc.
@@ -317,29 +327,48 @@ Note how we use `.filter` rather than something like `.where`. That's what makes
 Recreating the above with core looks pretty different.
 
 ```python
-select([bakery])  # bakery here is an instance of `Table`
+select([bread])  # bakery here is an instance of `Table`
                   # this is SELECT * FROM BAKERY
-  
-inset_smt = bakery.insert().values({"name": "bennisons", "location": "Evanston"})
+
+inset_smt = bread.insert().values(
+    {
+        "name": "miche",
+        "is_delicious": True,
+        "ingredient_cost": 2.22,
+    },
+    {
+        "name": "wonder",
+        "is_delicious": False,
+        "ingredient_cost": 0.60,
+    },
+)
+
 conn.execute(insert_smt)
 
 update_smt = (
-  bakery.update()
-    .where(bakery.c.name == "bennisons")
-  .values(name="Bennison's")
+  bread.update()
+  .where(bread.c.name == "wonder")
+  .values(name="wonderbread")
 )
 conn.execute(update_smt)
 
-join = bakery.join(bakery_employees).join(baker)
-select_smt = select([bakery.c.name, baker.c.name])
-        .select_from(join)
-      .where(baker.c.pronouns == "she/her")
-    .order_by(baker.c.age.desc())
-    .limit(10)
-    .cte(name="oldest_female_identifying_bakers")
+join = baker.join(baker_specialty).join(bread)
+
+select_smt = (
+    select([baker.c.name, bread.c.name])
+    .select_from(join)
+    .where(
+        and_(
+						bread.c.is_delicious == True,
+            baker.c.pronouns == "she/her",
+        )
+    )
+)
     
-result = conn.execute(select_smt).fetchall()
+talented_lady_bakers = conn.execute(select_smt).fetchall()
 ```
+
+The above emits the same SQL as the equivalent ORM query. The primary differences between the two examples are style and abstraction.
 
 ## In Conclusion
 
