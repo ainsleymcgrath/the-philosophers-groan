@@ -26,6 +26,9 @@ class ContactInfo(Base):
     baker_id = Column(Integer, ForeignKey("baker.id"))
     baker = relationship("Baker", back_populates="contact")
 
+    def __repr__(self):
+        return f"<ContactInfo {self.baker.name} {self.insta_handle}>"
+
 
 baker_specialty = Table(
     "baker_specialty",
@@ -46,6 +49,9 @@ class Baker(Base):
         "Bread", secondary=baker_specialty, back_populates="specializing_bakers"
     )
 
+    def __repr__(self):
+        return f"<Baker {self.name} ({self.pronouns})>"
+
 
 class Bread(Base):
     __tablename__ = "bread"
@@ -58,7 +64,9 @@ class Bread(Base):
         "Baker", secondary=baker_specialty, back_populates="specialties"
     )
 
+    def __repr__(self):
+        return f"<Bread {self.name}>"
 
-def walkthrough(engine):
-    breakpoint()
+
+def create_all(engine):
     Base.metadata.create_all(engine)

@@ -51,6 +51,5 @@ contact_info = Table(
 )
 
 
-def walkthrough(engine):
-    breakpoint()
+def create_all(engine):
     metadata.create_all(engine)
