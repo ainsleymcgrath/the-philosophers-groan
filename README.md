@@ -62,7 +62,7 @@ to_insert = [
     ["Ed", "he/him"],
     ["Zeb", "they/them"],
     ["Rheta", "she/her"],
-    ["Brad", None"],
+    ["Brad", None],
 ]
 
 session.add_all(
@@ -116,7 +116,7 @@ to_insert = [
     ["Ed", "he/him"],
     ["Zeb", "they/them"],
     ["Rheta", "she/her"],
-    ["Brad", None"],
+    ["Brad", None],
 ]
 
 insert_statement = baker.insert().values(
@@ -196,7 +196,7 @@ metadata = MetaData(bind=engine)
 
 #orm
 from sqlalchemy.ext.declarative import declarative_base
-Base = declarati(bind=engine)  # config can happen in many places
+Base = declarative_base(bind=engine)  # config can happen in many places
 Base.metadata  # produces the same object as above
 ```
 
@@ -290,9 +290,11 @@ session.query(Bread)  # produces a `Query`.
 miche = Bread(name="miche", is_delicious=True, ingredient_cost=2.22)
 wonderbread = Bread(name="wonder", is_delicious=False, ingredient_cost=0.60)
 
-session.add_all(bennisons, wonderbread)  # on commit(), an insert is emitted
+session.add_all(bennisons, wonderbread) 
 
 wonderbread.name = "wonderbread"  # session remembers this mutation, will commit accordingly
+
+session.commit()
 
 talented_lady_bakers = (
     session.query(Baker.name, Bread.name)
@@ -368,9 +370,9 @@ select_smt = (
 talented_lady_bakers = conn.execute(select_smt).fetchall()
 ```
 
-The above emits the same SQL as the equivalent ORM query. The primary differences between the two examples are style and abstraction.
+The above emits the same SQL as the equivalent ORM query. The primary differences between the two examples are style and abstraction. In `orm`, we build objects. in `core` we build statements. 
 
-## In Conclusion
+## What do we make of all this?
 
 SLALchemy is a wonderful tool for interacting with SQL databases in Python.
 
